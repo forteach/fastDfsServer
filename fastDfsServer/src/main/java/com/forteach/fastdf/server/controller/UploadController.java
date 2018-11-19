@@ -51,38 +51,6 @@ public class UploadController {
         return null;
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "redirect:uploadHtml";
-    }
-
-    @PostMapping("/uploadHtml") //new annotation since 4.3
-    public String singleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) {
-        if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
-            return "redirect:uploadStatus";
-        }
-        try {
-            // Get the file and save it somewhere
-            String path=saveFile(file);
-            redirectAttributes.addFlashAttribute("message",
-                    "You successfully uploaded '" + file.getOriginalFilename() + "'");
-            redirectAttributes.addFlashAttribute("path",
-                    "file path url '" + path + "'");
-            redirectAttributes.addFlashAttribute("path", path);
-
-        } catch (Exception e) {
-            logger.error("upload file failed",e);
-        }
-        return "redirect:/uploadStatus";
-    }
-
-    @GetMapping("/uploadStatus")
-    public String uploadStatus() {
-        return "uploadStatus";
-    }
-
     /**
      * @param multipartFile
      * @return
