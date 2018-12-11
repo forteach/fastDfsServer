@@ -1,13 +1,8 @@
 package com.forteach.server.fastdfs;
 
-import com.forteach.server.ServerApplication;
-import com.sun.org.apache.bcel.internal.generic.BasicType;
-import org.csource.common.MyException;
 import org.csource.common.NameValuePair;
 import org.csource.fastdfs.*;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
-import sun.misc.IOUtils;
 
 import java.io.*;
 import java.util.Properties;
@@ -45,13 +40,6 @@ public class FastDFSClient {
                 }
             }
         }
-//        try {
-//            inputStream = new InputStreamReader(FastDFSClient.class.getResourceAsStream("/config.properties"),"utf-8");
-//            properties.load(inputStream);
-//            ClientGlobal.initByProperties(properties);
-//        } catch (Exception e) {
-//            logger.error("FastDFS Client Init Fail!", e);
-//        }
     }
 
     public static String[] upload(FastDFSFile file) {
