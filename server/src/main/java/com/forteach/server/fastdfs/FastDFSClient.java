@@ -17,9 +17,10 @@ import java.util.Properties;
 public class FastDFSClient {
     private static org.slf4j.Logger logger = LoggerFactory.getLogger(FastDFSClient.class);
 
+    private static Properties pro;
     static {
-        Properties pro = new Properties();
         InputStreamReader in=null;
+        pro = new Properties();
         try {
             in=new InputStreamReader(FastDFSClient.class.getResourceAsStream("/fdfs_client.conf"),"utf-8");
             pro.load(in);
