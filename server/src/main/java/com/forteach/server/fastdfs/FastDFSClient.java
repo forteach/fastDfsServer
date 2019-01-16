@@ -3,8 +3,8 @@ package com.forteach.server.fastdfs;
 import org.csource.common.NameValuePair;
 import org.csource.fastdfs.*;
 import org.slf4j.LoggerFactory;
-
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 /**
@@ -22,7 +22,7 @@ public class FastDFSClient {
         InputStreamReader in=null;
         pro = new Properties();
         try {
-            in=new InputStreamReader(FastDFSClient.class.getResourceAsStream("/fdfs_client.conf"),"utf-8");
+            in = new InputStreamReader(FastDFSClient.class.getResourceAsStream("/fdfs_client.conf"), StandardCharsets.UTF_8);
             pro.load(in);
             ClientGlobal.initByProperties(pro);
         } catch (FileNotFoundException e) {
@@ -88,8 +88,7 @@ public class FastDFSClient {
         try {
             StorageClient storageClient = getTrackerClient();
             byte[] fileByte = storageClient.download_file(groupName, remoteFileName);
-            InputStream ins = new ByteArrayInputStream(fileByte);
-            return ins;
+            return new ByteArrayInputStream(fileByte);
         } catch (IOException e) {
             logger.error("IO Exception: Get File from Fast DFS failed", e);
         } catch (Exception e) {
@@ -125,13 +124,11 @@ public class FastDFSClient {
 
     private static StorageClient getTrackerClient() throws IOException {
         TrackerServer trackerServer = getTrackerServer();
-        StorageClient storageClient = new StorageClient(trackerServer, null);
-        return storageClient;
+        return new StorageClient(trackerServer, null);
     }
 
     private static TrackerServer getTrackerServer() throws IOException {
         TrackerClient trackerClient = new TrackerClient();
-        TrackerServer trackerServer = trackerClient.getConnection();
-        return trackerServer;
+        return trackerClient.getConnection();
     }
 }

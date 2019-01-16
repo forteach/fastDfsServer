@@ -6,14 +6,8 @@ import com.forteach.server.fastdfs.FastDFSFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -33,11 +27,9 @@ public class UploadController {
     private static Logger logger = LoggerFactory.getLogger(UploadController.class);
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response){
+    public String upload(@RequestParam("file") MultipartFile file){
         if (file.isEmpty()) {
-//            redirectAttributes.addFlashAttribute("message", "Please select a file to upload");
             return "文件不存在请重新上传！";
-//            return "redirect:uploadStatus";
         }
         try {
             // Get the file and save it somewhere
@@ -72,14 +64,14 @@ public class UploadController {
         inputStream.close();
         FastDFSFile file = new FastDFSFile(fileName, file_buff, ext);
         try {
-            fileAbsolutePath = FastDFSClient.upload(file);  //upload to fastdfs
+            //upload to fastdfs
+            fileAbsolutePath = FastDFSClient.upload(file);
         } catch (Exception e) {
             logger.error("upload file Exception!",e);
         }
         if (fileAbsolutePath==null) {
             logger.error("upload file failed,please upload again!");
         }
-        String path=FastDFSClient.getTrackerUrl()+fileAbsolutePath[0]+ "/"+fileAbsolutePath[1];
-        return path;
+        return FastDFSClient.getTrackerUrl()+fileAbsolutePath[0]+ "/"+fileAbsolutePath[1];
     }
 }
