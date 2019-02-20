@@ -33,10 +33,10 @@ public class UploadController {
         }
         try {
             // Get the file and save it somewhere
-            String path=saveFile(file);
+            String path = saveFile(file);
             Map map = new HashMap<String, String>();
             map.put("fileName", file.getOriginalFilename());
-            map.put("filePath", path);
+            map.put("fileUrl", path);
             String jsonString = JSONObject.toJSONString(map);
             return jsonString;
         } catch (Exception e) {
