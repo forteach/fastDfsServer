@@ -20,14 +20,13 @@ import java.util.Map;
  * @Version: 1.0
  * @Description:
  */
-@Controller
-@ResponseBody
+@RestController
 @RequestMapping("/")
 public class UploadController {
     private static Logger logger = LoggerFactory.getLogger(UploadController.class);
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file){
+    public String upload(@RequestParam("file") MultipartFile file, @RequestParam("sort") String sort){
         if (file.isEmpty()) {
             return "文件不存在请重新上传！";
         }
@@ -37,6 +36,7 @@ public class UploadController {
             Map map = new HashMap<String, String>();
             map.put("fileName", file.getOriginalFilename());
             map.put("fileUrl", path);
+            map.put("sort", Integer.parseInt(sort));
             String jsonString = JSONObject.toJSONString(map);
             return jsonString;
         } catch (Exception e) {
