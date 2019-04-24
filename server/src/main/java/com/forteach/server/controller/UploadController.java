@@ -5,9 +5,13 @@ import com.forteach.server.fastdfs.FastDFSClient;
 import com.forteach.server.fastdfs.FastDFSFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -26,7 +30,7 @@ public class UploadController {
     private static Logger logger = LoggerFactory.getLogger(UploadController.class);
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file, @RequestParam("sort") String sort){
+    public String upload(@RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (file.isEmpty()) {
             return "文件不存在请重新上传！";
         }
@@ -36,7 +40,10 @@ public class UploadController {
             Map map = new HashMap<String, String>();
             map.put("fileName", file.getOriginalFilename());
             map.put("fileUrl", path);
-            map.put("sort", Integer.parseInt(sort));
+            String sort = request.getParameter("sort");
+            if (!StringUtils.isEmpty(sort)) {
+                map.put("sort", Integer.parseInt(sort));
+            }
             String jsonString = JSONObject.toJSONString(map);
             return jsonString;
         } catch (Exception e) {
