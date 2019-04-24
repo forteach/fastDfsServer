@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import javax.servlet.MultipartConfigElement;
@@ -79,9 +80,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public MultipartConfigElement multipartConfigElement() {
         MultipartConfigFactory factory = new MultipartConfigFactory();
         //  单个数据大小
-        factory.setMaxFileSize(maxFileSize);
+        factory.setMaxFileSize(DataSize.parse(maxFileSize));
         /// 总上传数据大小
-        factory.setMaxRequestSize(maxRequestSize);
+        factory.setMaxRequestSize(DataSize.parse(maxRequestSize));
         return factory.createMultipartConfig();
     }
 }
