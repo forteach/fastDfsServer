@@ -5,10 +5,12 @@ import com.forteach.server.fastdfs.FastDFSClient;
 import com.forteach.server.fastdfs.FastDFSFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpRequest;
-import org.springframework.stereotype.Controller;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,10 @@ import java.util.Map;
 @RequestMapping("/")
 public class UploadController {
     private static Logger logger = LoggerFactory.getLogger(UploadController.class);
+
+
+    @Value("${file.server.path}")
+    public String filePath;
 
     @PostMapping("/upload")
     public String upload(@RequestParam("file") MultipartFile file, HttpServletRequest request){
@@ -79,6 +85,6 @@ public class UploadController {
         if (fileAbsolutePath==null) {
             logger.error("upload file failed,please upload again!");
         }
-        return FastDFSClient.getTrackerUrl()+fileAbsolutePath[0]+ "/"+fileAbsolutePath[1];
+        return filePath + fileAbsolutePath[0]+ "/"+fileAbsolutePath[1];
     }
 }

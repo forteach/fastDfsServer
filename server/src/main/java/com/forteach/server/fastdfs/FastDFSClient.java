@@ -118,9 +118,9 @@ public class FastDFSClient {
         return trackerClient.getFetchStorages(trackerServer, groupName, remoteFileName);
     }
 
-    public static String getTrackerUrl() throws IOException {
-        return "http://" + getTrackerServer().getInetSocketAddress().getHostString() + ":" + ClientGlobal.getG_tracker_http_port() + "/";
-    }
+//    public static String getTrackerUrl() throws IOException {
+//        return "http://" + getTrackerServer().getInetSocketAddress().getHostString() + ":" + ClientGlobal.getG_tracker_http_port() + "/";
+//    }
 
     private static StorageClient getTrackerClient() throws IOException {
         TrackerServer trackerServer = getTrackerServer();
