@@ -1,8 +1,12 @@
 package com.forteach.server.controller;
 
+import cn.binarywang.wx.miniapp.api.WxMaSecCheckService;
 import com.alibaba.fastjson.JSONObject;
+import com.forteach.server.config.WeChatMiniAppConfig;
 import com.forteach.server.fastdfs.FastDFSClient;
 import com.forteach.server.fastdfs.FastDFSFile;
+import com.forteach.server.util.FileUtil;
+import com.forteach.server.util.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.forteach.server.util.FileUtil.MB;
 
 /**
  * @Auther: zhangyy
@@ -36,26 +43,38 @@ public class UploadController {
     public String filePath;
 
     @PostMapping("/upload")
-    public String upload(@RequestParam("file") MultipartFile file, HttpServletRequest request){
-        if (file.isEmpty()) {
+    public String upload(@RequestParam("file") MultipartFile multipartFile, HttpServletRequest request) throws Exception {
+        if (multipartFile.isEmpty()) {
             return "文件不存在请重新上传！";
         }
         try {
             // Get the file and save it somewhere
-            String path = saveFile(file);
-            Map map = new HashMap<String, String>();
-            map.put("fileName", file.getOriginalFilename());
+            String check = request.getParameter("check");
+            if (StringUtil.isNotBlank(check)) {
+                long size = multipartFile.getSize();
+                if (MB < size) {
+                    return "您上传的文件大小为: " + FileUtil.getSize(size) + ",只能上传小于1MB的图片";
+                }
+                //调用微信信息内容校验是否合法
+                final WxMaSecCheckService checkService = WeChatMiniAppConfig.getMaService().getSecCheckService();
+                File file = FileUtil.convertMultiPartToFile(multipartFile);
+                if (!checkService.checkImage(file)) {
+                    return "图片不合法";
+                }
+            }
+            String path = saveFile(multipartFile);
+            Map<String, Object> map = new HashMap<>(2);
+            map.put("fileName", multipartFile.getOriginalFilename());
             map.put("fileUrl", path);
             String sort = request.getParameter("sort");
             if (!StringUtils.isEmpty(sort)) {
                 map.put("sort", Integer.parseInt(sort));
             }
-            String jsonString = JSONObject.toJSONString(map);
-            return jsonString;
+            return JSONObject.toJSONString(map);
         } catch (Exception e) {
-            logger.error("upload file failed",e);
+            logger.error("upload file failed", e);
         }
-        return null;
+        return "";
     }
 
     /**
@@ -64,12 +83,12 @@ public class UploadController {
      * @throws IOException
      */
     public String saveFile(MultipartFile multipartFile) throws IOException {
-        String[] fileAbsolutePath={};
-        String fileName=multipartFile.getOriginalFilename();
+        String[] fileAbsolutePath = {};
+        String fileName = multipartFile.getOriginalFilename();
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
         byte[] file_buff = null;
-        InputStream inputStream=multipartFile.getInputStream();
-        if(inputStream!=null){
+        InputStream inputStream = multipartFile.getInputStream();
+        if (inputStream != null) {
             int len1 = inputStream.available();
             file_buff = new byte[len1];
             inputStream.read(file_buff);
@@ -80,11 +99,11 @@ public class UploadController {
             //upload to fastdfs
             fileAbsolutePath = FastDFSClient.upload(file);
         } catch (Exception e) {
-            logger.error("upload file Exception!",e);
+            logger.error("upload file Exception!", e);
         }
-        if (fileAbsolutePath==null) {
+        if (fileAbsolutePath == null) {
             logger.error("upload file failed,please upload again!");
         }
-        return filePath + fileAbsolutePath[0]+ "/"+fileAbsolutePath[1];
+        return filePath + fileAbsolutePath[0] + "/" + fileAbsolutePath[1];
     }
 }
