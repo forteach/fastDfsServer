@@ -11,10 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +47,7 @@ public class UploadController {
         try {
             // Get the file and save it somewhere
             String check = request.getParameter("check");
-            if (StringUtil.isNotBlank(check)) {
+            if (StringUtil.isNotBlank(check) && "check".equals(check)) {
                 long size = multipartFile.getSize();
                 if (MB < size) {
                     return "您上传的文件大小为: " + FileUtil.getSize(size) + ",只能上传小于1MB的图片";
@@ -77,12 +74,24 @@ public class UploadController {
         return "";
     }
 
+    @DeleteMapping(path = "/")
+    public String deleteFile(HttpServletRequest httpServletRequest) throws Exception {
+        String url = httpServletRequest.getParameter("url");
+        if (StringUtil.isBlank(url)) {
+            return "url不能是空白";
+        }
+        String name = url.substring(url.indexOf("group1"));
+        String remoteFileName = name.substring(name.indexOf("/") + 1);
+        FastDFSClient.deleteFile("group1", remoteFileName);
+        return "success";
+    }
+
     /**
      * @param multipartFile
      * @return
      * @throws IOException
      */
-    public String saveFile(MultipartFile multipartFile) throws IOException {
+    private String saveFile(MultipartFile multipartFile) throws IOException {
         String[] fileAbsolutePath = {};
         String fileName = multipartFile.getOriginalFilename();
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
