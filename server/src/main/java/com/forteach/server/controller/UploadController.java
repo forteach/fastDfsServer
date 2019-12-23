@@ -56,7 +56,13 @@ public class UploadController {
                 final WxMaSecCheckService checkService = WeChatMiniAppConfig.getMaService().getSecCheckService();
                 File file = FileUtil.convertMultiPartToFile(multipartFile);
                 if (!checkService.checkImage(file)) {
+                    if (file.exists()) {
+                        file.delete();
+                    }
                     return "图片不合法";
+                }
+                if (file.exists()) {
+                    file.delete();
                 }
             }
             String path = saveFile(multipartFile);
