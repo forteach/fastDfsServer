@@ -17,8 +17,8 @@
         <appender-ref ref="STDOUT"/>
     </logger>
 
-    <root level="error">
-        <appender-ref ref="STDOUT"/>
-    </root>
+<!--    <root level="error">-->
+<!--        <appender-ref ref="STDOUT"/>-->
+<!--    </root>-->
 
 </configuration>
